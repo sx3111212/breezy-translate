@@ -1,5 +1,7 @@
 # 轻风翻译
 
+[简体中文](README.md) | [English](README.en.md)
+
 英文品牌为 **Breezy Translate**。窗口与托盘使用完整名称；设置、关于介绍等页面内使用简称「轻风 / 輕風 / Breezy」。日语、韩语的完整名称分别为「そよ風翻訳」「산들바람 번역」，其他已支持的西文界面保留 Breezy Translate。
 
 Windows 本地悬浮翻译工具。输入框里写好内容，点击玻璃气泡按钮，整个输入框直接翻译为设置的目标语言，默认英语。也可使用可配置的全局快捷键，无需手动复制粘贴。
@@ -78,7 +80,7 @@ MyMemory 保留为免配置的原型服务，支持按指定语言对请求翻�
 
 ## 启动
 
-双击 `启动英语助手.cmd`。需要 Windows 和 .NET 9 Desktop Runtime；当前开发电脑已经安装。
+从源码构建后，双击 `启动轻风翻译.cmd`。源码构建的版本需要 Windows 和 .NET 9 Desktop Runtime；Releases 中的便携包已包含运行时。
 
 ## 使用
 

@@ -22,7 +22,7 @@ try {
     if ($links.DonationUrl -and $links.DonationUrl -notmatch '^https://') { throw 'DonationUrl must use HTTPS' }
     $utf8 = New-Object System.Text.UTF8Encoding($false)
     [IO.File]::WriteAllText((Join-Path $app 'app-links.json'), ($links | ConvertTo-Json), $utf8)
-    Copy-Item .\README.md $app
+    Copy-Item .\README*.md $app
     if (Test-Path .\LICENSE) { Copy-Item .\LICENSE $app }
     # Test the actual bundled runtime and embedded dictionary before making the ZIP.
     foreach ($test in @('--dictionary-test', '--dictionary-packs-test')) {
