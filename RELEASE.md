@@ -10,7 +10,7 @@
 2. 在 GitHub 上创建公开仓库，或使用 `gh repo create OWNER/breezy-translate --public --description "轻风翻译 / Breezy Translate — Windows floating translator"`。
 3. 将 `app-links.json` 的 `GitHubRepository` 填为真实的 `OWNER/breezy-translate`；`ProjectUrl` 填为仓库 HTTPS 地址；`ReleasesUrl` 填为该地址加 `/releases/latest`。
 4. 如果已有捐赠主页，填入 `DonationUrl`，在 README 增加同一链接，并创建 `.github/FUNDING.yml`，内容为 `custom: ['真实的 HTTPS 捐赠链接']`。没有收款主页时保留空值。不要直接填写尚未开通的 GitHub Sponsors 地址。
-5. 选择项目许可证；词典自带的 MIT 许可证必须保留。
+5. 当前作者暂不选择项目许可证；不添加项目级 `LICENSE`。词典自带的 MIT 许可证必须保留，其授权范围不扩展到本项目代码。
 6. 在项目目录打包：
 
 ```powershell
