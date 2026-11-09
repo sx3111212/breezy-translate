@@ -6,7 +6,7 @@ Windows 本地悬浮翻译工具。输入框里写好内容，点击玻璃气泡
 
 ## 下载与开始使用
 
-首次 GitHub 发布正在准备中；正式发布后，安装包将提供在仓库的 Releases 页面。发布步骤与链接配置见 [发布说明](RELEASE.md)。
+从 [GitHub Releases](https://github.com/sx3111212/breezy-translate/releases/latest) 获取发布包。仓库主页为 [sx3111212/breezy-translate](https://github.com/sx3111212/breezy-translate)。发布步骤与链接配置见 [发布说明](RELEASE.md)。
 
 Windows x64 用户下载 `BreezyTranslate-版本号-win-x64.zip` 后，解压整个文件夹，双击 `EnglishHelper.exe`。发布包包含 .NET 运行时，无需单独安装；请保留同目录的配置和依赖文件。
 
