@@ -37,7 +37,7 @@ Reports and fixture screenshots are written alongside the test executable. The o
 ## Package
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.2
 ```
 
 The release script copies only runtime files and documentation into the ZIP. Compiler caches, object files, generated resource source, test reports, and .NET assemblies are excluded. Expanded dictionary data is a separate release attachment.
@@ -45,6 +45,7 @@ The release script copies only runtime files and documentation into the ZIP. Com
 ## Compatibility and implementation
 
 - Existing preferences, DPAPI-protected keys, AI profile IDs, and dictionaries remain under `%LOCALAPPDATA%\EnglishHelper`.
+- `FollowInput` and `FollowSelection` default to true when absent and are saved separately under General. Follow settings control automatic bubble display; translation shortcuts remain available independently. Clicking the tray icon opens manual input; its context menu has four actions.
 - UI Automation work runs on a separate MTA thread. Mouse hooks only post coordinates to the UI thread.
 - Standard Windows Edit controls also use native selection and replacement messages. Password and read-only controls remain excluded from writing; changes in focus or original text prevent automatic replacement.
 - Clipboard fallbacks retain the original OLE data object and restore it only while the clipboard still belongs to that operation.

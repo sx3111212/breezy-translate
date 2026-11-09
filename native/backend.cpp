@@ -8,7 +8,8 @@ Json default_preferences() {
         {"ReadHotkey","Ctrl+Alt+D"},{"InputHotkey","Ctrl+Alt+E"},{"Provider","MyMemory"},{"AzureRegion",""},{"ProtectedAzureKey",""},
         {"AiProfiles",Json::array()},{"DefaultAiProfileId",""},{"ReadProvider","Offline"},{"InputProvider","MyMemory"},
         {"ReadWordAiProfileId",""},{"ReadSentenceAiProfileId",""},{"InputAiProfileId",""},{"ReadHotkeyEnabled",true},
-        {"InputHotkeyEnabled",true},{"ReadSentenceProvider","MyMemory"},{"InputSourceLanguage",language},{"MyMemoryEmail",""}};
+        {"InputHotkeyEnabled",true},{"ReadSentenceProvider","MyMemory"},{"InputSourceLanguage",language},{"MyMemoryEmail",""},
+        {"FollowInput",true},{"FollowSelection",true}};
 }
 Json normalize_preferences(Json value) {
     auto defaults = default_preferences();

@@ -10,6 +10,8 @@ For Windows 10/11 x64. Extract the entire folder and run **Breezy.exe**. No .NET
 - Write in a supported input field and click the bubble, or press Ctrl+Alt+E, to translate the entire field.
 - Right-click the bubble or tray icon for Settings. Choose your languages, services, shortcuts, and interface language there.
 - Use Exit in the tray menu to quit. Closing a result popup keeps the app running.
+- Click the tray icon once to open manual input.
+- Settings → General has separate Follow input fields and Follow selected text switches. Both are enabled by default.
 
 MyMemory is the default online service and requires an internet connection. The built-in offline dictionary supports English words to Simplified Chinese only. AI services, Azure, and local Ollama can be configured separately with your own accounts or models.
 

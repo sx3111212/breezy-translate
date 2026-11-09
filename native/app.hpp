@@ -24,12 +24,11 @@ class App {
     std::unique_ptr<Hotkeys> hotkeys_;
     std::unique_ptr<Worker> accessibility_,network_;
     std::atomic<bool> polling_{false},closing_{false};
-    bool hover_=false,dragging_=false,pinned_=false,bottom_=false,busy_=false;
+    bool hover_=false,dragging_=false,pinned_=false,busy_=false;
     bool expand_right_=false;
     float reveal_=0,phase_=0;
     POINT drag_start_{},bubble_start_{},released_{};
     Anchor anchor_;
-    HWND last_external_=nullptr;
     std::atomic<unsigned> operation_{0};
     DWORD success_until_=0;
     Com<ISpVoice> voice_;
@@ -43,6 +42,7 @@ class App {
     void poll();
     void install_tray();
     void menu(POINT point);
+    HMENU context_menu();
 public:
     Strings strings;
     Preferences preferences;

@@ -8,10 +8,10 @@
 
 ```powershell
 $env:BREEZY_ZIG = 'C:\path\to\zig.exe'
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.2
 ```
 
-输出目录为 `artifacts\release-2.0.1`。脚本拒绝覆盖已经存在的同版本目录。主包 `Breezy-win-x64.zip` 只包含原生程序、配置、双语说明、更新日志和第三方许可证，不包含 .NET、编译器、对象文件或测试报告。完整词典作为独立附件提供。
+输出目录为 `artifacts\release-2.0.2`。脚本拒绝覆盖已经存在的同版本目录。主包 `Breezy-win-x64.zip` 只包含原生程序、配置、双语说明、更新日志和第三方许可证，不包含 .NET、编译器、对象文件或测试报告。完整词典作为独立附件提供。
 
 发布前运行窗口和完整词典测试，查看 `artifacts\native` 中的报告：
 
@@ -28,10 +28,10 @@ Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-pack-test 
 
 ```powershell
 git add .
-git commit -m "Release native Breezy 2.0.1"
+git commit -m "Release native Breezy 2.0.2"
 git push origin main
-gh release create v2.0.1 --repo sx3111212/breezy-translate --target main --draft --title "Breezy 2.0.1" --notes-file .\RELEASE-NOTES.md .\artifacts\release-2.0.1\Breezy-win-x64.zip .\artifacts\release-2.0.1\ecdict-full-en-zh.json.gz .\artifacts\release-2.0.1\ECDICT-LICENSE.txt .\artifacts\release-2.0.1\SHA256SUMS.txt
-gh release edit v2.0.1 --repo sx3111212/breezy-translate --draft=false --latest
+gh release create v2.0.2 --repo sx3111212/breezy-translate --target main --draft --title "Breezy 2.0.2" --notes-file .\RELEASE-NOTES.md .\artifacts\release-2.0.2\Breezy-win-x64.zip .\artifacts\release-2.0.2\ecdict-full-en-zh.json.gz .\artifacts\release-2.0.2\ECDICT-LICENSE.txt .\artifacts\release-2.0.2\SHA256SUMS.txt
+gh release edit v2.0.2 --repo sx3111212/breezy-translate --draft=false --latest
 ```
 
 固定入口：

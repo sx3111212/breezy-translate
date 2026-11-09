@@ -5,7 +5,7 @@ namespace breezy {
 enum{nav=900,save=901,cancel=902,word_provider=1001,sentence_provider=1002,target_language=1003,shortcut_enabled=1004,shortcut=1005,manage=1006,source_language=1007,demo=1090,demo_pause=1091,demo_replay=1092,
     service_type=2001,profile_list=2002,preset=2003,profile_name=2004,protocol=2005,address=2006,api_key=2007,model=2008,default_profile=2009,load_models=2010,test_translation=2011,add_profile=2012,delete_profile=2013,
     azure_region=2101,azure_key=2102,memory_email=2201,memory_limits=2202,pack_import=3001,pack_url=3002,pack_download=3003,pack_folder=3004,pack_reload=3005,pack_list=3006,pack_delete=3007,pack_info=3008,
-    interface_language=4001,release_page=5001,donate=6001,project=6002};
+    interface_language=4001,follow_input=4002,follow_selection=4003,release_page=5001,donate=6001,project=6002};
 static const char* sections[]={"selectionFeature","inputFeature","service","offlineDictionary","generalSettings","softwareUpdate","donation"};
 static const std::vector<Choice> protocols={{"ChatCompletions","Chat Completions"},{"Anthropic","Claude Messages"}};
 static std::string chosen_provider(const Json& prefs,bool writing,bool word){auto provider=resolve_provider(prefs,writing,word);auto id=get(prefs,writing?"InputAiProfileId":word?"ReadWordAiProfileId":"ReadSentenceAiProfileId");return provider=="AI"&&!id.empty()?"ai:"+id:provider;}
@@ -84,7 +84,10 @@ void SettingsWindow::build(int section){
         field(L"EDIT",utf8(app_.dictionary.directory().wstring()),0,24,308,680,28,ES_AUTOHSCROLL|ES_READONLY);
         field(L"BUTTON",app_.t("nativeFolder"),pack_folder,24,346,200,34,WS_TABSTOP);field(L"BUTTON",app_.t("nativeImport"),pack_import,236,346,230,34,WS_TABSTOP);field(L"BUTTON",app_.t("nativeReload"),pack_reload,478,346,226,34,WS_TABSTOP);
         field(L"EDIT","https://github.com/sx3111212/breezy-translate/releases/latest/download/ecdict-full-en-zh.json.gz",pack_url,24,396,460,30,ES_AUTOHSCROLL|WS_TABSTOP);field(L"BUTTON",app_.t("nativeDownload"),pack_download,498,394,206,34,WS_TABSTOP);field(L"STATIC",app_.t("nativePackHint"),0,24,438,680,112,SS_LEFT);for(int id:{pack_folder,pack_import,pack_reload,pack_download})theme::flat(GetDlgItem(host_,id));
-    }else if(section==4){label("interface",24,34);auto box=combo(interface_language,30,interfaces_,get(draft_,"InterfaceLanguage","en"));MoveWindow(box,220,30,310,450,TRUE);}
+    }else if(section==4){
+        label("interface",24,34);auto box=combo(interface_language,30,interfaces_,get(draft_,"InterfaceLanguage","en"));MoveWindow(box,220,30,310,450,TRUE);
+        for(bool input:{true,false}){int y=input?92:168;auto toggle=field(L"BUTTON",app_.t(input?"followInput":"followSelection"),input?follow_input:follow_selection,24,y,650,30,BS_AUTOCHECKBOX|WS_TABSTOP);SendMessageW(toggle,BM_SETCHECK,flag(draft_,input?"FollowInput":"FollowSelection",true)?BST_CHECKED:BST_UNCHECKED,0);auto hint=field(L"STATIC",app_.t(input?"followInputHint":"followSelectionHint"),0,47,y+34,650,32,SS_LEFT);SendMessageW(hint,WM_SETFONT,(WPARAM)theme::font(10.667f),TRUE);}
+    }
     else if(section==5||section==6){
         bool about=section==6;field(L"STATIC",app_.t(about?"aboutIntro":"nativeUpdateIntro"),0,24,22,650,65,SS_LEFT);
         field(L"STATIC",about?app_.t("nativeSupportThanks"):app_.t("nativeVersion")+": " BREEZY_VERSION "\nWindows \u00b7 X64",0,24,97,650,54,SS_LEFT);
@@ -111,7 +114,7 @@ void SettingsWindow::collect(){
     if(rebuilding_)return;
     if(section_==0||section_==1){bool writing=section_==1;draft_[writing?"InputTarget":"ReadTarget"]=chosen(GetDlgItem(host_,target_language),languages_,"en");draft_[writing?"InputHotkeyEnabled":"ReadHotkeyEnabled"]=SendMessageW(GetDlgItem(host_,shortcut_enabled),BM_GETCHECK,0,0)==BST_CHECKED;draft_[writing?"InputHotkey":"ReadHotkey"]=window_text(GetDlgItem(host_,shortcut));draft_["HotkeysEnabled"]=flag(draft_,"ReadHotkeyEnabled",true)||flag(draft_,"InputHotkeyEnabled",true);store_provider(draft_,writing,false,chosen(GetDlgItem(host_,sentence_provider),services_,"MyMemory"));if(writing)draft_["InputSourceLanguage"]=chosen(GetDlgItem(host_,source_language),sources_,"auto");else store_provider(draft_,false,true,chosen(GetDlgItem(host_,word_provider),word_services_,"Offline"));}
     else if(section_==2){if(service_type_=="AI")collect_profile();else if(service_type_=="Azure"){draft_["AzureRegion"]=trim(window_text(GetDlgItem(host_,azure_region)));auto key=window_text(GetDlgItem(host_,azure_key));if(!key.empty())draft_["ProtectedAzureKey"]=protect(key);}else draft_["MyMemoryEmail"]=validate_email(window_text(GetDlgItem(host_,memory_email)));}
-    else if(section_==4)draft_["InterfaceLanguage"]=chosen(GetDlgItem(host_,interface_language),interfaces_,"en");
+    else if(section_==4){draft_["InterfaceLanguage"]=chosen(GetDlgItem(host_,interface_language),interfaces_,"en");draft_["FollowInput"]=SendMessageW(GetDlgItem(host_,follow_input),BM_GETCHECK,0,0)==BST_CHECKED;draft_["FollowSelection"]=SendMessageW(GetDlgItem(host_,follow_selection),BM_GETCHECK,0,0)==BST_CHECKED;}
 }
 void SettingsWindow::command(int id,int notification){
     if(rebuilding_)return;

@@ -43,13 +43,13 @@ std::string Automation::text(IUIAutomationElement* element)const{
     if(text_pattern&&SUCCEEDED(text_pattern->get_DocumentRange(range.put())))return range_text(range.get());
     throw std::runtime_error("This application does not expose readable input text.");
 }
-Anchor Automation::anchor(POINT point){
+Anchor Automation::anchor(POINT point,bool follow_selection,bool follow_input){
     Anchor result;result.foreground=GetForegroundWindow();if(!result.foreground||own_window(result.foreground))return result;
     DWORD process=0;GetWindowThreadProcessId(result.foreground,&process);
     std::vector<Com<IUIAutomationElement>> candidates;Com<IUIAutomationElement> under,focused;
     api_->ElementFromPoint(point,under.put());api_->GetFocusedElement(focused.put());if(under)candidates.push_back(under);if(focused)candidates.push_back(focused);
     Com<IUIAutomationTreeWalker> walker;api_->get_ControlViewWalker(walker.put());
-    for(auto current:candidates)for(int depth=0;current&&walker&&depth<8;depth++){
+    if(follow_selection)for(auto current:candidates)for(int depth=0;current&&walker&&depth<8;depth++){
         int owner=0;current->get_CurrentProcessId(&owner);if((DWORD)owner!=process||password(current.get()))break;
         if(HWND window=native_edit(current.get())){DWORD start=0,end=0;if(native_selection(window,start,end)){DWORD_PTR packed=0;RECT bounds{};GetWindowRect(window,&bounds);if(SendMessageTimeoutW(window,EM_POSFROMCHAR,start,0,SMTO_ABORTIFHUNG,200,&packed)&&packed!=(DWORD_PTR)-1){POINT position{(short)LOWORD(packed),(short)HIWORD(packed)};ClientToScreen(window,&position);bounds={position.x,position.y,position.x+40,position.y+22};}result.bounds=bounds;result.selection=GetForegroundWindow()==result.foreground;return result;}}
         auto pattern_=pattern<IUIAutomationTextPattern>(current.get(),UIA_TextPatternId);Com<IUIAutomationTextRangeArray> ranges;
@@ -62,7 +62,7 @@ Anchor Automation::anchor(POINT point){
         }}
         Com<IUIAutomationElement> parent;walker->GetParentElement(current.get(),parent.put());current=std::move(parent);
     }
-    auto input=editor();if(input){input->get_CurrentBoundingRectangle(&result.bounds);result.editable=GetForegroundWindow()==result.foreground;}
+    if(follow_input){auto input=editor();if(input){input->get_CurrentBoundingRectangle(&result.bounds);result.editable=GetForegroundWindow()==result.foreground;}}
     return result;
 }
 Target Automation::capture(bool writing,POINT point){

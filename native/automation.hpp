@@ -23,7 +23,7 @@ class Automation {
 public:
     Automation();
     bool editable(IUIAutomationElement* element) const;
-    Anchor anchor(POINT released_at);
+    Anchor anchor(POINT released_at,bool follow_selection=true,bool follow_input=true);
     Target capture(bool writing,POINT released_at);
     void replace(const Target& target,const std::string& translated);
     bool same_focused(const Target& target);

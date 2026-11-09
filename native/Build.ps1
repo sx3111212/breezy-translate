@@ -1,7 +1,7 @@
 param(
     [string]$Compiler = $env:BREEZY_ZIG,
     [string]$OutputDirectory = '',
-    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '2.0.1',
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '2.0.2',
     [switch]$Check
 )
 $ErrorActionPreference = 'Stop'

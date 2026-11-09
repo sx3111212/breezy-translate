@@ -5,7 +5,7 @@
 namespace breezy {
 App* App::active_=nullptr;
 static constexpr UINT dispatch=WM_APP+1,mouse_release=WM_APP+2,tray_message=WM_APP+3,mouse_down=WM_APP+4;
-static constexpr int menu_read=1,menu_write=2,menu_manual=3,menu_settings=4,menu_follow=5,menu_bottom=6,menu_update=7,menu_about=8,menu_exit=9;
+static constexpr int menu_settings=4,menu_update=7,menu_about=8,menu_exit=9;
 void round_window(HWND window){DWORD policy=2;DwmSetWindowAttribute(window,2,&policy,sizeof(policy));DWORD border=0x00F0E8E2;DwmSetWindowAttribute(window,34,&border,sizeof(border));DWORD preference=2;DwmSetWindowAttribute(window,33,&preference,sizeof(preference));MARGINS margins{1,1,1,1};DwmExtendFrameIntoClientArea(window,&margins);}
 HWND control(App& app,HWND parent,const wchar_t* type,const std::string& text,int id,int x,int y,int width,int height,DWORD style){
     HWND value=CreateWindowExW(0,type,wide(text).c_str(),WS_CHILD|WS_VISIBLE|style|(std::wstring(type)==L"EDIT"?WS_BORDER:0),x,y,width,height,parent,(HMENU)(INT_PTR)id,app.instance(),nullptr);
@@ -37,7 +37,7 @@ App::App(HINSTANCE instance,Path preferences_path,Path dictionary_path):instance
     taskbar_created_=RegisterWindowMessageW(L"TaskbarCreated");hotkeys_=std::make_unique<Hotkeys>(main_);
     if(!hotkeys_->apply(prefs))error(t("conflict"));
     accessibility_=std::make_unique<Worker>();network_=std::make_unique<Worker>();
-    GetCursorPos(&released_);pinned_=flag(prefs,"BubblePinned");bottom_=flag(prefs,"BubbleBottom");
+    GetCursorPos(&released_);
     install_tray();mouse_=SetWindowsHookExW(WH_MOUSE_LL,mouse_proc,instance_,0);SetTimer(main_,1,160,nullptr);SetTimer(bubble_,2,32,nullptr);
 }
 App::~App(){
@@ -52,21 +52,21 @@ App::~App(){
 int App::run(){MSG message;while(GetMessageW(&message,nullptr,0,0)>0){HWND dialog=settings&&IsWindow(settings->window())?settings->window():result&&IsWindowVisible(result->window())?result->dialog():nullptr;if(dialog&&IsDialogMessageW(dialog,&message))continue;TranslateMessage(&message);DispatchMessageW(&message);}return(int)message.wParam;}
 void App::post(std::function<void()> callback){if(closing_)return;auto value=new std::function<void()>(std::move(callback));if(!PostMessageW(main_,dispatch,0,(LPARAM)value))delete value;}
 void App::work(std::function<void()> callback){network_->post(std::move(callback));}
-void App::install_tray(){tray_={};tray_.cbSize=sizeof(tray_);tray_.hWnd=main_;tray_.uID=1;tray_.uFlags=NIF_ICON|NIF_MESSAGE|NIF_TIP;tray_.uCallbackMessage=tray_message;tray_.hIcon=LoadIconW(instance_,MAKEINTRESOURCEW(1));wcsncpy_s(tray_.szTip,wide(t("app")).c_str(),_TRUNCATE);Shell_NotifyIconW(NIM_ADD,&tray_);tray_.uVersion=NOTIFYICON_VERSION_4;Shell_NotifyIconW(NIM_SETVERSION,&tray_);}
+void App::install_tray(){tray_={};tray_.cbSize=sizeof(tray_);tray_.hWnd=main_;tray_.uID=1;tray_.uFlags=NIF_ICON|NIF_MESSAGE|NIF_TIP;tray_.uCallbackMessage=tray_message;tray_.hIcon=LoadIconW(instance_,MAKEINTRESOURCEW(1));wcsncpy_s(tray_.szTip,wide(t("app")+" "+t("trayActions")).c_str(),_TRUNCATE);Shell_NotifyIconW(NIM_ADD,&tray_);tray_.uVersion=NOTIFYICON_VERSION_4;Shell_NotifyIconW(NIM_SETVERSION,&tray_);}
 void App::position_bubble(const Anchor& value){
     if(closing_||settings&&IsWindow(settings->window())||result&&IsWindowVisible(result->window())||hover_||dragging_)return;
-    anchor_=value;if(!value.selection&&!value.editable){if(!pinned_)ShowWindow(bubble_,SW_HIDE);return;}
-    auto prefs=preferences.snapshot();auto enabled=flag(prefs,"HotkeysEnabled",true)&&flag(prefs,value.selection?"ReadHotkeyEnabled":"InputHotkeyEnabled",true);tooltip_text_=wide(t(value.selection?"readAction":"writeAction")+" · "+(enabled?get(prefs,value.selection?"ReadHotkey":"InputHotkey"):t("shortcutDisabled")));TOOLINFOW hint{sizeof(hint)};hint.hwnd=bubble_;hint.uId=(UINT_PTR)bubble_;hint.lpszText=tooltip_text_.data();SendMessageW(tooltip_,TTM_UPDATETIPTEXTW,0,(LPARAM)&hint);
-    last_external_=value.foreground;if(pinned_){ShowWindow(bubble_,SW_SHOWNOACTIVATE);return;}
+    anchor_=value;auto prefs=preferences.snapshot();if((!value.selection&&!value.editable)||(value.selection&&!flag(prefs,"FollowSelection",true))||(value.editable&&!flag(prefs,"FollowInput",true))){ShowWindow(bubble_,SW_HIDE);return;}
+    auto enabled=flag(prefs,"HotkeysEnabled",true)&&flag(prefs,value.selection?"ReadHotkeyEnabled":"InputHotkeyEnabled",true);tooltip_text_=wide(t(value.selection?"readAction":"writeAction")+" · "+(enabled?get(prefs,value.selection?"ReadHotkey":"InputHotkey"):t("shortcutDisabled")));TOOLINFOW hint{sizeof(hint)};hint.hwnd=bubble_;hint.uId=(UINT_PTR)bubble_;hint.lpszText=tooltip_text_.data();SendMessageW(tooltip_,TTM_UPDATETIPTEXTW,0,(LPARAM)&hint);
+    if(pinned_){ShowWindow(bubble_,SW_SHOWNOACTIVATE);render_bubble();return;}
     int x=value.selection?value.bounds.right+28:value.bounds.right-7;
-    int y=value.selection?value.bounds.top-25:bottom_?value.bounds.bottom-7:value.bounds.top+std::min<LONG>((value.bounds.bottom-value.bounds.top)/2,16);
+    int y=value.selection?value.bounds.top-25:value.bounds.top+std::min<LONG>((value.bounds.bottom-value.bounds.top)/2,16);
     MONITORINFO monitor{sizeof(monitor)};POINT point{x,y};GetMonitorInfoW(MonitorFromPoint(point,MONITOR_DEFAULTTONEAREST),&monitor);x=(int)std::clamp<LONG>(x,monitor.rcWork.left+26,std::max(monitor.rcWork.left+26,monitor.rcWork.right-26));y=(int)std::clamp<LONG>(y,monitor.rcWork.top+26,std::max(monitor.rcWork.top+26,monitor.rcWork.bottom-26));expand_right_=x-monitor.rcWork.left<174;
     SetWindowPos(bubble_,HWND_TOPMOST,x-(expand_right_?24:172),y-24,196,48,SWP_NOACTIVATE|SWP_SHOWWINDOW);render_bubble();
 }
 void App::poll(){
     if(polling_.exchange(true)||closing_)return;
     if(settings&&IsWindow(settings->window())||result&&IsWindowVisible(result->window())||hover_||dragging_){polling_=false;return;}
-    POINT point=released_;accessibility_->post([this,point]{Anchor value;try{Automation automation;value=automation.anchor(point);}catch(...){}post([this,value]{polling_=false;position_bubble(value);});});
+    auto prefs=preferences.snapshot();bool selection=flag(prefs,"FollowSelection",true),input=flag(prefs,"FollowInput",true);if(!selection&&!input){ShowWindow(bubble_,SW_HIDE);polling_=false;return;}POINT point=released_;accessibility_->post([this,point,selection,input]{Anchor value;try{Automation automation;value=automation.anchor(point,selection,input);}catch(...){}post([this,value]{polling_=false;position_bubble(value);});});
 }
 LRESULT CALLBACK App::mouse_proc(int code,WPARAM message,LPARAM data){if(code>=0&&active_&&(message==WM_LBUTTONUP||message==WM_RBUTTONUP||message==WM_MBUTTONUP||message==WM_LBUTTONDOWN||message==WM_RBUTTONDOWN||message==WM_MBUTTONDOWN)){auto item=(MSLLHOOKSTRUCT*)data;bool down=message==WM_LBUTTONDOWN||message==WM_RBUTTONDOWN||message==WM_MBUTTONDOWN;PostMessageW(active_->main_,down?mouse_down:mouse_release,(WPARAM)item->pt.x,(LPARAM)item->pt.y);}return CallNextHookEx(nullptr,code,message,data);}
 LRESULT CALLBACK App::main_proc(HWND window,UINT message,WPARAM wparam,LPARAM lparam){
@@ -75,10 +75,10 @@ LRESULT CALLBACK App::main_proc(HWND window,UINT message,WPARAM wparam,LPARAM lp
         if(message==app->taskbar_created_&&message){app->install_tray();return 0;}
         switch(message){
         case dispatch:{std::unique_ptr<std::function<void()>> callback((std::function<void()>*)lparam);if(!app->closing_)(*callback)();return 0;}
-        case mouse_down:case mouse_release:{POINT point{(LONG)wparam,(LONG)lparam};if(message==mouse_release)app->released_=point;if(app->result&&IsWindowVisible(app->result->window())){RECT bounds;GetWindowRect(app->result->window(),&bounds);HWND hit=WindowFromPoint(point);DWORD process=0;GetWindowThreadProcessId(hit,&process);if(!PtInRect(&bounds,point)&&process!=GetCurrentProcessId())app->result->hide();}return 0;}
+        case mouse_down:case mouse_release:{POINT point{(LONG)wparam,(LONG)lparam};HWND hit=WindowFromPoint(point);DWORD owner=0;GetWindowThreadProcessId(hit,&owner);if(owner!=GetCurrentProcessId()){app->pinned_=false;if(message==mouse_release)app->released_=point;}if(app->result&&IsWindowVisible(app->result->window())){RECT bounds;GetWindowRect(app->result->window(),&bounds);HWND hit=WindowFromPoint(point);DWORD process=0;GetWindowThreadProcessId(hit,&process);if(!PtInRect(&bounds,point)&&process!=GetCurrentProcessId())app->result->hide();}return 0;}
         case WM_TIMER:if(app->result&&IsWindowVisible(app->result->window())&&app->result->original_window()){HWND current=GetForegroundWindow();DWORD process=0;GetWindowThreadProcessId(current,&process);if(current!=app->result->original_window()&&process!=GetCurrentProcessId())app->result->hide();}app->poll();if(app->busy_||app->success_until_>GetTickCount())app->render_bubble();return 0;
         case WM_HOTKEY:app->translate(wparam==0x5102);return 0;
-        case tray_message:{UINT event=LOWORD(lparam);if(event==WM_CONTEXTMENU||event==WM_RBUTTONUP){POINT point;GetCursorPos(&point);app->menu(point);}else if(event==NIN_SELECT||event==WM_LBUTTONUP)app->open_settings();return 0;}
+        case tray_message:{UINT event=LOWORD(lparam);if(event==WM_CONTEXTMENU||event==WM_RBUTTONUP){POINT point;GetCursorPos(&point);app->menu(point);}else if(event==NIN_SELECT||event==NIN_KEYSELECT||event==WM_LBUTTONUP)app->open_manual();return 0;}
         case WM_CLOSE:DestroyWindow(window);return 0;
         case WM_DESTROY:app->closing_=true;app->http.cancel();PostQuitMessage(0);return 0;
         }
@@ -98,12 +98,12 @@ LRESULT CALLBACK App::bubble_proc(HWND window,UINT message,WPARAM wparam,LPARAM 
     }
     return DefWindowProcW(window,message,wparam,lparam);
 }
+HMENU App::context_menu(){
+    HMENU menu=CreatePopupMenu();for(auto item:std::initializer_list<std::pair<UINT,const char*>>{{menu_settings,"settings"},{menu_update,"softwareUpdate"},{menu_about,"donation"},{menu_exit,"exit"}})AppendMenuW(menu,MF_STRING,item.first,wide(t(item.second)).c_str());return menu;
+}
 void App::menu(POINT point){
-    HWND previous=GetForegroundWindow();DWORD previous_process=0;GetWindowThreadProcessId(previous,&previous_process);if(previous&&previous_process!=GetCurrentProcessId())last_external_=previous;
-    HMENU menu=CreatePopupMenu();auto add=[&](UINT flags,UINT id,const std::string& text){AppendMenuW(menu,flags,id,wide(text).c_str());};
-    add(MF_STRING,menu_read,t("readAction"));add(MF_STRING,menu_write,t("writeAction"));add(MF_STRING,menu_manual,t("manual"));add(MF_SEPARATOR,0,"");add(MF_STRING,menu_settings,t("settings"));add(MF_STRING|(pinned_?0:MF_CHECKED),menu_follow,t("follow"));add(MF_STRING|(bottom_?MF_CHECKED:0),menu_bottom,t("bottom"));add(MF_STRING,menu_update,t("softwareUpdate"));add(MF_STRING,menu_about,t("donation"));add(MF_SEPARATOR,0,"");add(MF_STRING,menu_exit,t("exit"));
-    SetForegroundWindow(main_);int id=TrackPopupMenu(menu,TPM_RETURNCMD|TPM_RIGHTBUTTON,point.x,point.y,0,main_,nullptr);DestroyMenu(menu);PostMessageW(main_,WM_NULL,0,0);
-    switch(id){case menu_read:case menu_write:if(last_external_)SetForegroundWindow(last_external_);translate(id==menu_write);break;case menu_manual:open_manual();break;case menu_settings:open_settings();break;case menu_follow:pinned_=false;break;case menu_bottom:bottom_=!bottom_;break;case menu_update:open_settings(5);break;case menu_about:open_settings(6);break;case menu_exit:PostMessageW(main_,WM_CLOSE,0,0);break;}
+    HMENU popup=context_menu();SetForegroundWindow(main_);int id=TrackPopupMenu(popup,TPM_RETURNCMD|TPM_RIGHTBUTTON,point.x,point.y,0,main_,nullptr);DestroyMenu(popup);PostMessageW(main_,WM_NULL,0,0);
+    switch(id){case menu_settings:open_settings();break;case menu_update:open_settings(5);break;case menu_about:open_settings(6);break;case menu_exit:PostMessageW(main_,WM_CLOSE,0,0);break;}
 }
 void App::translate(bool writing,const std::string& manual,const std::string& source_override,const std::string& target_override,const std::string& provider_override,const std::string& model_override){
     cancel_translation();unsigned generation=++operation_;auto prefs=preferences.snapshot();busy_=true;render_bubble();POINT point=released_;
@@ -152,7 +152,7 @@ void App::replace(const Target& target,const std::string& text){
 }
 void App::apply_preferences(const Json& value){
     if(flag(value,"HotkeysEnabled",true)){auto read=parse_hotkey(get(value,"ReadHotkey")),write=parse_hotkey(get(value,"InputHotkey"));bool a=flag(value,"ReadHotkeyEnabled",true),b=flag(value,"InputHotkeyEnabled",true);if(a&&!read.valid||b&&!write.valid||a&&b&&read.modifiers==write.modifiers&&read.key==write.key)throw std::runtime_error("keyRule");}
-    auto previous=preferences.snapshot();if(!hotkeys_->apply(value))throw std::runtime_error("conflict");try{preferences.save(value);}catch(...){hotkeys_->apply(previous);throw;}strings.language=get(value,"InterfaceLanguage","en");Shell_NotifyIconW(NIM_DELETE,&tray_);install_tray();
+    auto previous=preferences.snapshot();if(!hotkeys_->apply(value))throw std::runtime_error("conflict");try{preferences.save(value);}catch(...){hotkeys_->apply(previous);throw;}strings.language=get(value,"InterfaceLanguage","en");pinned_=false;hover_=false;ShowWindow(bubble_,SW_HIDE);Shell_NotifyIconW(NIM_DELETE,&tray_);install_tray();
 }
 int run_application(HINSTANCE instance){
     HANDLE mutex=CreateMutexW(nullptr,TRUE,L"Local\\EnglishHelper.Desktop");if(GetLastError()==ERROR_ALREADY_EXISTS){Strings strings;MessageBoxW(nullptr,wide(strings.text("alreadyRunning")).c_str(),L"Breezy",MB_OK);if(mutex)CloseHandle(mutex);return 0;}

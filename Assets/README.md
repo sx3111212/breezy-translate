@@ -1,5 +1,7 @@
 # Floating translation button artwork
 
+The v2.0.2 General settings page is captured in `native-general-preview.png` and `native-general-preview.en.png`, with both follow switches enabled by default.
+
 Native v2.0.1 screenshots: `native-dictionary-preview.png`, `native-selection-preview.png`, `native-selection-preview.en.png`, and `native-sentence-preview.png` capture the real C++ windows over a plain test backdrop, including DWM rounding and shadows. `native-floating-hover-preview.png` renders the same per-pixel-alpha surface used by the live capsule. All use isolated UI-test preferences and the existing bubble artwork; they are not generated mockups. Previews without the `native-` prefix are historical references.
 
 Generated using the built-in `image_gen.imagegen` tool with `transparent_background: true`.

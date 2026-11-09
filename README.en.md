@@ -16,7 +16,7 @@ Download the [Windows x64 portable ZIP](https://github.com/sx3111212/breezy-tran
 
 ![Native dictionary popup](Assets/native-dictionary-preview.png)
 
-Version 2.0.1 restores the previous capsule animation, white rounded result cards, shadows, and settings style using native C++, without a .NET dependency.
+Version 2.0.1 restored the previous capsule animation, white rounded result cards, shadows, and settings style using native C++, without a .NET dependency.
 
 ![Native settings and demonstration](Assets/native-selection-preview.en.png)
 
@@ -36,7 +36,9 @@ Settings has seven sections: Selection translation, Input translation, translati
 
 Shortcuts can be recorded, enabled, or disabled separately. A shortcut must include Ctrl or Alt; F12 is not supported. Enabled shortcuts must differ. Shortcut conflicts preserve the previous binding. Global shortcuts pause while Settings is open so that new combinations can be recorded.
 
-Drag the bubble to temporarily fix its position. Restore automatic positioning through its context menu. The tray menu also provides manual input and Exit; closing a result popup keeps the app running.
+General has separate Follow input fields and Follow selected text switches, both enabled by default. Dragging adjusts the bubble temporarily; clicking external content resumes following. Click the tray icon once for manual input. Its context menu contains only Settings, Software updates, About Breezy, and Exit. Closing a result popup keeps the app running.
+
+![General settings with separate follow switches](Assets/native-general-preview.en.png)
 
 ## Translation services
 
@@ -115,7 +117,7 @@ The UI tests briefly open isolated test windows and use temporary preferences, a
 To make a portable release:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.2
 ```
 
 The script builds the native app, runs core checks, packages the executable with its configuration, bilingual documentation and licenses, and generates SHA-256 checksums. The optional expanded dictionary is a separate attachment. See [publishing instructions in Chinese](RELEASE.md).

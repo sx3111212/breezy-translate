@@ -1,5 +1,12 @@
 # Breezy Translate
 
+## 2.0.2
+
+- Added separate Follow input fields and Follow selected text switches under General, both enabled by default.
+- Moved follow controls out of the context menu and added explanations of each bubble behavior.
+- A single tray-icon click opens manual input. The context menu now contains only Settings, Software updates, About Breezy, and Exit.
+- Following resumes after a drag when clicking external content; bubble clicks retain the original selection position.
+
 ## 2.0.1
 
 - Restored the translucent capsule bubble, smooth hover expansion, loading ring, and success feedback using native C++.
