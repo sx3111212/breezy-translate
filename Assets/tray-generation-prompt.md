@@ -1,0 +1,6 @@
+# Tray optical-size artwork
+
+Built-in `image_gen.imagegen` edit, `transparent_background: true`.
+Reference: `translation-orb.png`. Output: `translation-tray.png`.
+
+Use case: precise-object-edit. Edit target: the attached glass speech-bubble translation icon. Create a special optical-size version for a Windows system tray icon displayed at only 16 to 24 pixels. Preserve its recognizable rounded speech-bubble silhouette, two overlapping white speech bubbles at the center, and blue/mint/violet glass identity. Make the silhouette MUCH bolder and the body more saturated deep blue-violet, with mint on the upper-left edge. Center the object and enlarge it to occupy 96 percent of the square canvas. Remove the drop shadow underneath, all detached glows, all tiny details, and almost all empty margins. Use a solid opaque vivid body with a simple large white center motif and a restrained bright rim, rather than translucent washed-out glass. Strong contrast on both white and dark desktop taskbars. Clean antialiased edges. Keep a genuinely transparent background outside the silhouette. Single square icon only, no text, no letters, no multiple alternatives, no UI mockup. This is an adaptation of the same icon, not a new identity.
