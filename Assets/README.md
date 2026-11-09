@@ -1,5 +1,7 @@
 # Floating translation button artwork
 
+Native v2 screenshots: `native-dictionary-preview.png` and `native-selection-preview.png` are captures of the real C++ Win32 controls using isolated UI-test preferences. They reuse the existing bubble artwork; they are not generated mockups.
+
 Generated using the built-in `image_gen.imagegen` tool with `transparent_background: true`.
 
 - Production image: `translation-orb.png`. Embedded into the executable; no dependency on the original generation folder.

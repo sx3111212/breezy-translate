@@ -1,0 +1,16 @@
+{
+  "nativeProtocol": ["接口协议", "介面協定", "API protocol", "API プロトコル", "API 프로토콜", "Protocole API", "API-Protokoll", "Protocolo API"],
+  "nativeImport": ["导入词典…", "匯入詞典…", "Import dictionary…", "辞書をインポート…", "사전 가져오기…", "Importer un dictionnaire…", "Wörterbuch importieren…", "Importar diccionario…"],
+  "nativeFolder": ["打开词典文件夹", "開啟詞典資料夾", "Open dictionary folder", "辞書フォルダーを開く", "사전 폴더 열기", "Ouvrir le dossier des dictionnaires", "Wörterbuchordner öffnen", "Abrir carpeta de diccionarios"],
+  "nativeDownload": ["下载并安装", "下載並安裝", "Download and install", "ダウンロードしてインストール", "다운로드 및 설치", "Télécharger et installer", "Herunterladen und installieren", "Descargar e instalar"],
+  "nativeRemove": ["删除选中词典", "刪除選取詞典", "Remove selected pack", "選択した辞書を削除", "선택한 사전 삭제", "Supprimer le dictionnaire sélectionné", "Ausgewähltes Wörterbuch entfernen", "Eliminar diccionario seleccionado"],
+  "nativeReload": ["重新加载", "重新載入", "Reload", "再読み込み", "다시 불러오기", "Recharger", "Neu laden", "Recargar"],
+  "nativeWords": ["个单词", "個單字", "words", "単語", "개 단어", "mots", "Wörter", "palabras"],
+  "nativeModels": ["个模型", "個模型", "models", "モデル", "개 모델", "modèles", "Modelle", "modelos"],
+  "nativeImporting": ["正在导入…", "正在匯入…", "Importing…", "インポート中…", "가져오는 중…", "Importation…", "Importieren…", "Importando…"],
+  "nativeDownloading": ["正在下载…", "正在下載…", "Downloading…", "ダウンロード中…", "다운로드 중…", "Téléchargement…", "Herunterladen…", "Descargando…"],
+  "nativeReleases": ["前往版本发布页", "前往版本發佈頁", "View releases", "リリースページを開く", "릴리스 페이지 열기", "Voir les versions", "Veröffentlichungen anzeigen", "Ver versiones"],
+  "nativeDonation": ["捐赠支持 ♥", "捐贈支持 ♥", "Donate ♥", "寄付で応援 ♥", "후원하기 ♥", "Faire un don ♥", "Spenden ♥", "Donar ♥"],
+  "nativeNoDonation": ["捐赠通道暂未配置，感谢你的支持。", "捐贈管道暫未設定，感謝你的支持。", "A donation destination has not been configured. Thank you for your support.", "寄付先はまだ設定されていません。ご支援ありがとうございます。", "후원 경로가 아직 설정되지 않았습니다. 응원해 주셔서 감사합니다.", "Aucun lien de don n’est encore configuré. Merci pour votre soutien.", "Ein Spendenziel ist noch nicht eingerichtet. Vielen Dank für Ihre Unterstützung.", "Todavía no se ha configurado un destino de donación. Gracias por tu apoyo."],
+  "nativeVersion": ["当前版本", "目前版本", "Current version", "現在のバージョン", "현재 버전", "Version actuelle", "Aktuelle Version", "Versión actual"]
+}

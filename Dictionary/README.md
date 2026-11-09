@@ -1,4 +1,4 @@
-﻿# Offline English–Chinese dictionaries
+# Offline English–Chinese dictionaries
 
 Source: ECDICT, https://github.com/skywind3000/ECDICT (MIT). Retain the included ECDICT-LICENSE.txt when distributing packs.
 
@@ -24,12 +24,13 @@ Upload DictionaryPacks/ecdict-full-en-zh.json.gz and ECDICT-LICENSE.txt as GitHu
 
 ## Build and verify
 
+The current app is native C++. Build it with the toolchain described in [native/README.md](../native/README.md). No .NET runtime is used.
+
 ```powershell
-dotnet build -c Release
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --build-dictionary .\obj\ecdict-complete.csv .\Dictionary\english-zh.json.gz
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --build-full-dictionary .\obj\ecdict-complete.csv .\DictionaryPacks\ecdict-full-en-zh.json.gz
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --dictionary-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --dictionary-packs-test
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--build-dictionary .\obj\ecdict-complete.csv .\Dictionary\english-zh.json.gz' -Wait
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--build-full-dictionary .\obj\ecdict-complete.csv .\DictionaryPacks\ecdict-full-en-zh.json.gz' -Wait
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-test' -Wait
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-pack-test .\DictionaryPacks\ecdict-full-en-zh.json.gz' -Wait
 ```
 
-For local installation via CLI: --install-dictionary <pack-or-csv>. Restart an older running app after upgrading.
+For local installation via CLI: `Breezy.exe --install-dictionary <pack-or-csv>`. Restart an older running app after upgrading.

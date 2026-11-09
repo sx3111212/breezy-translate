@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
-英文品牌为 **Breezy Translate**。窗口与托盘使用完整名称；设置、关于介绍等页面内使用简称「轻风 / 輕風 / Breezy」。日语、韩语的完整名称分别为「そよ風翻訳」「산들바람 번역」，其他已支持的西文界面保留 Breezy Translate。
+官方英文品牌为 **Breezy Translate**，可执行文件统一为 **`Breezy.exe`**。界面按语言使用「轻风 / 輕風 / Breezy」简称。自 v2.0 起采用 C++ 原生 Windows 实现，不依赖 .NET。
 
 Windows 本地悬浮翻译工具。输入框里写好内容，点击玻璃气泡按钮，整个输入框直接翻译为设置的目标语言，默认英语。也可使用可配置的全局快捷键，无需手动复制粘贴。
 
@@ -10,13 +10,13 @@ Windows 本地悬浮翻译工具。输入框里写好内容，点击玻璃气泡
 
 从 [GitHub Releases](https://github.com/sx3111212/breezy-translate/releases/latest) 获取发布包。仓库主页为 [sx3111212/breezy-translate](https://github.com/sx3111212/breezy-translate)。发布步骤与链接配置见 [发布说明](RELEASE.md)。
 
-Windows x64 用户下载 `BreezyTranslate-版本号-win-x64.zip` 后，解压整个文件夹，双击 `EnglishHelper.exe`。发布包包含 .NET 运行时，无需单独安装；请保留同目录的配置和依赖文件。
+下载 [Windows x64 便携包](https://github.com/sx3111212/breezy-translate/releases/latest/download/Breezy-win-x64.zip)，解压整个文件夹，双击 **`Breezy.exe`**。适用于 Windows 10/11 x64，无需安装 .NET、VC++ 运行库或其他框架。升级前请先从托盘退出旧版；已有服务、快捷键及词典配置继续保留。
 
 1. 选中文字，点击附近的气泡查词或翻译；也可以按 `Ctrl+Alt+D`。
 2. 在输入框写好内容，点击气泡翻译整个输入框；也可以按 `Ctrl+Alt+E`。
 3. 右键托盘图标打开设置，选择目标语言和翻译服务。首次使用默认 MyMemory；AI 和 Azure 需要配置自己的服务。
 
-![划词查词界面](Assets/dictionary-preview.png)
+![原生划词查词界面](Assets/native-dictionary-preview.png)
 
 ## 支持开发
 
@@ -24,7 +24,7 @@ Windows x64 用户下载 `BreezyTranslate-版本号-win-x64.zip` 后，解压整
 
 ## 许可证
 
-本项目暂未指定开源许可证。第三方 ECDICT 词典按随附的 [MIT 许可证](Dictionary/ECDICT-LICENSE.txt) 分发，该许可证仅适用于对应词典数据。
+本项目暂未指定开源许可证。第三方 ECDICT 词典按随附的 [MIT 许可证](Dictionary/ECDICT-LICENSE.txt) 分发，该许可证仅适用于对应词典数据。原生版使用的 JSON、压缩及 C++ 运行库的许可证见 [native/vendor](native/vendor)，便携包也包含这些许可说明。
 
 ## 语言、设置与快捷键
 
@@ -80,11 +80,11 @@ MyMemory 保留为免配置的原型服务，支持按指定语言对请求翻�
 
 ## 启动
 
-从源码构建后，双击 `启动轻风翻译.cmd`。源码构建的版本需要 Windows 和 .NET 9 Desktop Runtime；Releases 中的便携包已包含运行时。
+下载便携包后直接运行 `Breezy.exe`。从源码构建原生版后，也可使用仓库中的 `启动轻风翻译.cmd`，启动 `artifacts\native\Breezy.exe`。
 
 ## 使用
 
-- 两个功能页的动画分别演示划词和输入框操作，可暂停、继续或重新播放。格子内不放多余的上下说明。示例随目标语言变化，仅作本机演示，不读取真实输入、不联网、不播放声音。切换到其他设置页后暂停动画计时。
+- 两个功能页的动画分别演示划词和输入框操作，可暂停、继续或重新播放。示例随目标语言变化，仅作本机演示，不读取真实输入、不联网、不播放声音。切换到其他设置页后暂停动画计时。
 
 - 写作：在支持的输入框里写好中文，不用选字，点击玻璃气泡，整个输入框的内容会直接替换为英文。翻译期间可以保留光标，原文有变化或切换输入框时会停止替换并保留译文供复制。
 - 阅读：选中英文后，气泡自动出现在选区第一行的右上方，直接点气泡查询词义或翻译；结果面板在选区附近打开，可听英文读音。在可编辑区域查询整句时，也可以确认后使用译文替换选区。
@@ -117,34 +117,32 @@ MyMemory 保留为免配置的原型服务，支持按指定语言对请求翻�
 
 ## 开发与验证
 
-发布配置位于 `app-links.json`：`GitHubRepository` 填写 `owner/repository`，更新页会链接到对应 GitHub Releases；`ProjectUrl` 是项目主页，`DonationUrl` 是捐赠链接，均使用 HTTPS。留空时显示未配置状态。当前提供手动打开发布页，不自动检查或下载安装。本地更新日志来自 `CHANGELOG.md`。
-
-内部程序集和配置目录保留 `EnglishHelper`，以兼容已有设置。桌面启动入口为 `启动轻风翻译.cmd`，使用 `bin\Release\net9.0-windows` 中的版本。
-
-图片源文件、生成提示词及预览说明见 [Assets/README.md](Assets/README.md)。
+原生实现位于 [native](native/README.md)。构建需要 Windows 和 Zig 0.17.1 C/C++ 工具链，不需要 .NET SDK。
 
 ```powershell
-dotnet build .\EnglishHelper.csproj -c Release --ignore-failed-sources
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --self-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --ui-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --dictionary-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --word-view-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --popup-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --settings-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --settings-navigation-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --ai-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --memory-email-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --settings-preview
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --animation-preview
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --multilingual-smoke
+$env:BREEZY_ZIG = 'C:\path\to\zig.exe'
+powershell -ExecutionPolicy Bypass -File .\native\Build.ps1 -Check
 ```
 
-`--self-test` 会发送两条固定测试短句到翻译服务。`--ui-test` 会短暂显示测试输入框和独立的测试程序，验证悬浮条焦点、选区取词、全框读取与替换、原文变动与焦点变动的拦截、密码框与只读控件排除，以及剪贴板恢复。结果记录在输出目录的 `self-test.txt` 和 `ui-test.txt`。
+输出为 `artifacts\native\Breezy.exe`。`-Check` 运行隔离的核心测试，并检查 PE 文件：Windows x64 图形程序、无 CLR 目录、仅导入 Windows 系统库。
 
-`--word-view-test` 使用隔离的临时偏好文件与语音请求替身验证自动朗读开关、偏好保存、下次查词自动播放、关闭停止与手动重听，并以静音音量验证真实 SAPI 英语语音调用。结果记录到 `word-view-test.txt`；不会改变用户的朗读偏好。
+窗口与输入测试会短暂显示独立测试窗口，使用临时配置和本机模拟服务，不读取真实付费密钥：
 
-`--popup-test` 在独立测试窗口中实际点击弹窗内外，验证单词与句子的外部点击关闭、点击透传、焦点丢失关闭、无二值裁剪、关闭取消任务，以及替换原文时内部焦点切换不会误关闭。会短暂移动鼠标，结束后恢复鼠标位置、剪贴板，不修改用户设置。
+```powershell
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-ui-test' -Wait
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-pack-test .\DictionaryPacks\ecdict-full-en-zh.json.gz' -Wait
+```
 
-`--settings-test` 使用临时配置验证系统语言初始化、旧设置迁移、独立目标保存、取消前的预览状态、真实按键录入、注册冲突回滚、禁用、DPAPI 加密及 Azure 模拟响应；不会请求真实 Azure 翻译。`--multilingual-smoke` 会向 MyMemory 发送两条固定测试短语。
+测试结果位于输出目录的 `native-test.txt`、`native-ui-test.txt` 和 `native-pack-test.txt`。测试覆盖词典、UTF-8 分段、服务协议、密钥加密、快捷键冲突恢复、多语言设置、焦点与原文变化保护、取消、模型切换和朗读偏好。窗口测试使用静音的语音替身验证调用及语言选择。
 
-`--memory-email-test` 使用模拟网络验证可选邮箱的格式校验、取消、保存恢复、清除、匿名参数省略、带加号邮箱的 URL 编码、分段请求及服务隔离；测试邮箱不会发往外部，也不会请求实际增加额度。
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.0
+```
+
+发布脚本默认构建原生版，运行核心检查，打包主程序、配置、双语说明和许可证，并生成 SHA-256 校验文件。扩展词典作为单独附件发布，不塞入主程序下载包。发布步骤见 [RELEASE.md](RELEASE.md)。
+
+`app-links.json` 保存项目主页、GitHub 仓库、版本发布页和捐赠地址，均使用 HTTPS。更新入口手动打开 GitHub Releases，不自动下载或安装。当前捐赠地址仍为空。
+
+配置与词典目录继续使用 `%LOCALAPPDATA%\EnglishHelper`，以兼容旧版。原有 C# 源码和 `EnglishHelper.csproj` 保留供历史版本维护；原生版不使用这些托管程序集，也不分发 .NET 运行时。
+
+图片来源与预览说明见 [Assets/README.md](Assets/README.md)。

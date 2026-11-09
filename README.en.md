@@ -2,11 +2,11 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
-A floating translation tool for Windows. Look up selected words, translate sentences, or translate an entire input field without manually copying and pasting text.
+A native Windows translation tool. Since v2.0, Breezy uses C++ and Windows system APIs without a .NET dependency. Look up selected words, translate sentences, or translate an entire input field without manually copying and pasting text.
 
 ## Download and get started
 
-Download the Windows x64 ZIP from [GitHub Releases](https://github.com/sx3111212/breezy-translate/releases/latest). Extract the entire folder and run `EnglishHelper.exe`. The portable package includes the .NET runtime; keep its configuration and dependency files together.
+Download the [Windows x64 portable ZIP](https://github.com/sx3111212/breezy-translate/releases/latest/download/Breezy-win-x64.zip), extract the entire folder, and run **`Breezy.exe`**. Supports Windows 10/11 x64. No .NET, Visual C++ Redistributable, or other framework installation is required. Exit the old tray app before upgrading; existing service, shortcut, and dictionary preferences are retained.
 
 1. Select text and click the nearby bubble, or press `Ctrl+Alt+D`, to look up a word or translate a sentence.
 2. Write in a supported input field and click the bubble, or press `Ctrl+Alt+E`, to translate the whole field. The default target for input translation is English.
@@ -14,7 +14,7 @@ Download the Windows x64 ZIP from [GitHub Releases](https://github.com/sx3111212
 
 **To use the English interface:** open Settings → General, select English as the interface language, then save. The same download supports all interface languages; a separate English executable is not required.
 
-![Dictionary popup, shown with the Chinese interface](Assets/dictionary-preview.png)
+![Native dictionary popup](Assets/native-dictionary-preview.png)
 
 ## Features and settings
 
@@ -88,29 +88,34 @@ You can support Breezy by [reporting issues](https://github.com/sx3111212/breezy
 
 ## License
 
-This project has not been assigned an open-source license. The bundled ECDICT data is distributed under its own [MIT license](Dictionary/ECDICT-LICENSE.txt), which applies to that dictionary data only.
+This project has not been assigned an open-source license. The bundled ECDICT data is distributed under its own [MIT license](Dictionary/ECDICT-LICENSE.txt), which applies to that dictionary data only. JSON, compression, and C++ runtime notices are in [native/vendor](native/vendor) and are included in the portable package.
 
 ## Build and verify
 
-Source builds require Windows and the .NET 9 SDK. The internal assembly and settings directory retain the name `EnglishHelper` for compatibility.
+The native implementation is in [native](native/README.md). Building requires Windows and the Zig 0.17.1 C/C++ toolchain, with no .NET SDK.
 
 ```powershell
-dotnet build .\EnglishHelper.csproj -c Release --ignore-failed-sources
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --dictionary-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --dictionary-packs-test
-dotnet .\bin\Release\net9.0-windows\EnglishHelper.dll --settings-navigation-test
+$env:BREEZY_ZIG = 'C:\path\to\zig.exe'
+powershell -ExecutionPolicy Bypass -File .\native\Build.ps1 -Check
 ```
 
-After building, run `EnglishHelper.exe` from the output directory, or use the source checkout's `启动轻风翻译.cmd` launcher. Unlike the portable release, a framework-dependent source build requires the .NET 9 Desktop Runtime.
-
-Additional checks include `--ui-test`, `--word-view-test`, `--popup-test`, `--settings-test`, `--ai-test`, and `--memory-email-test`. UI checks briefly open windows and some move the pointer or exercise the clipboard. Service configuration tests use local fixtures; `--self-test` and `--multilingual-smoke` send fixed test text to online translation services.
-
-To make a portable Windows x64 release:
+The output is `artifacts\native\Breezy.exe`. The build verifies that the executable is a Windows x64 GUI application with no CLR directory and only Windows system-library imports. `-Check` also runs isolated core tests.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 1.0.1
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-ui-test' -Wait
+Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-pack-test .\DictionaryPacks\ecdict-full-en-zh.json.gz' -Wait
 ```
 
-The script refuses to overwrite an existing version directory, bundles the runtime, writes the repository links into the package, runs dictionary checks, and creates release files with SHA-256 checksums. See [publishing instructions in Chinese](RELEASE.md) for the GitHub upload steps.
+The UI tests briefly open isolated test windows and use temporary preferences, a local simulated service, and a silent speech substitute. Reports are written as `native-test.txt`, `native-ui-test.txt`, and `native-pack-test.txt` in the output directory. Checks cover service protocols, UTF-8 request segmentation, DPAPI, shortcut conflict recovery, eight UI languages, dictionary packs, safe input replacement, cancellation, model switching, and speech preferences.
 
-Public project, release, and donation links are configured in `app-links.json`. Software updates opens GitHub Releases manually; it does not automatically check for, download, or install updates. Local release notes come from `CHANGELOG.md`. Artwork sources and preview details are documented in [Assets/README.md](Assets/README.md).
+To make a portable release:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.0
+```
+
+The script builds the native app, runs core checks, packages the executable with its configuration, bilingual documentation and licenses, and generates SHA-256 checksums. The optional expanded dictionary is a separate attachment. See [publishing instructions in Chinese](RELEASE.md).
+
+Project, release, and donation links are in `app-links.json`. Software updates opens GitHub Releases manually; it does not automatically download or install updates. A donation destination has not been configured yet.
+
+Preferences remain in `%LOCALAPPDATA%\EnglishHelper` for compatibility. The original C# sources and `EnglishHelper.csproj` are retained for legacy maintenance; the native app uses neither those managed assemblies nor a bundled .NET runtime. Artwork and previews are documented in [Assets/README.md](Assets/README.md).

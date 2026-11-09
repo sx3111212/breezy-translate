@@ -7,3 +7,4 @@
 *.png binary
 *.ico binary
 *.gz binary
+native/vendor/** linguist-vendored
