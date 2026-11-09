@@ -1,5 +1,14 @@
 # Breezy Translate
 
+## 2.0.1
+
+- Restored the translucent capsule bubble, smooth hover expansion, loading ring, and success feedback using native C++.
+- Restored compact white result cards, rounded corners and shadows, display-scaled typography, phonetics, speaker buttons, and the Auto-read switch.
+- Restored the pale settings sidebar, rounded buttons, and continuous demonstrations with pause and replay.
+- Aligned all seven settings pages and restored dictionary columns, email clearing, and expandable release notes.
+- Moved temporary model editing into an owned popup. Applying a model prepares the next retry without changing saved defaults.
+- Remains portable as `Breezy.exe`, with no .NET dependency. Expanded dictionary data stays separate.
+
 ## 2.0.0
 
 - Migrated to a native C++ Windows app named `Breezy.exe`, without bundled .NET, WinForms, or WPF runtimes.

@@ -2,7 +2,7 @@ param(
     [ValidatePattern('^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$')]
     [string]$Repository = 'sx3111212/breezy-translate',
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '2.0.0',
+    [string]$Version = '2.0.1',
     [string]$Compiler = $env:BREEZY_ZIG,
     [switch]$UseExistingBuild
 )

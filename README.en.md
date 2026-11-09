@@ -16,6 +16,10 @@ Download the [Windows x64 portable ZIP](https://github.com/sx3111212/breezy-tran
 
 ![Native dictionary popup](Assets/native-dictionary-preview.png)
 
+Version 2.0.1 restores the previous capsule animation, white rounded result cards, shadows, and settings style using native C++, without a .NET dependency.
+
+![Native settings and demonstration](Assets/native-selection-preview.en.png)
+
 ## Features and settings
 
 - **Selection translation:** look up words or translate sentences near the selected text. In supported editable fields, you can also replace the selection with its translation.
@@ -111,7 +115,7 @@ The UI tests briefly open isolated test windows and use temporary preferences, a
 To make a portable release:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
 ```
 
 The script builds the native app, runs core checks, packages the executable with its configuration, bilingual documentation and licenses, and generates SHA-256 checksums. The optional expanded dictionary is a separate attachment. See [publishing instructions in Chinese](RELEASE.md).

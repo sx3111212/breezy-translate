@@ -3,12 +3,14 @@
 #include "automation.hpp"
 #include <gdiplus.h>
 #include <sapi.h>
+#include "theme.hpp"
 
 namespace breezy {
 class SettingsWindow;
 class ResultWindow;
 class App {
     friend class SettingsWindow;
+    friend int native_ui_test(HINSTANCE);
     HINSTANCE instance_;
     HWND main_=nullptr,bubble_=nullptr;
     HWND tooltip_=nullptr;
@@ -23,6 +25,8 @@ class App {
     std::unique_ptr<Worker> accessibility_,network_;
     std::atomic<bool> polling_{false},closing_{false};
     bool hover_=false,dragging_=false,pinned_=false,bottom_=false,busy_=false;
+    bool expand_right_=false;
+    float reveal_=0,phase_=0;
     POINT drag_start_{},bubble_start_{},released_{};
     Anchor anchor_;
     HWND last_external_=nullptr;
@@ -34,7 +38,7 @@ class App {
     static LRESULT CALLBACK main_proc(HWND,UINT,WPARAM,LPARAM);
     static LRESULT CALLBACK bubble_proc(HWND,UINT,WPARAM,LPARAM);
     static LRESULT CALLBACK mouse_proc(int,WPARAM,LPARAM);
-    void render_bubble();
+    void render_bubble(const Path& preview={});
     void position_bubble(const Anchor& anchor);
     void poll();
     void install_tray();
@@ -69,6 +73,7 @@ public:
     void dismiss_result();
 };
 
+enum {result_source=101,result_translation,result_source_language,result_target_language,result_service,result_translate,result_copy,result_replace,result_speak,result_auto,result_settings,result_model,result_models,result_apply_model};
 struct Choice { std::string code,label; };
 HWND control(App& app,HWND parent,const wchar_t* type,const std::string& text,int id,int x,int y,int width,int height,DWORD style=0);
 std::vector<Choice> language_choices(const App& app,bool source=false,bool interface_only=false);
@@ -81,6 +86,8 @@ class ResultWindow {
     App& app_;
     HWND window_=nullptr,source_=nullptr,target_=nullptr,source_language_=nullptr,target_language_=nullptr,service_=nullptr,status_=nullptr,auto_read_=nullptr;
     HWND model_=nullptr;
+    HWND phonetic_=nullptr,provider_label_=nullptr,direction_=nullptr,options_=nullptr;
+    bool menu_open_=false;
     bool compact_=false,manual_=false,receiving_=false;
     unsigned generation_=0;
     std::vector<Choice> sources_,targets_,services_;
@@ -91,6 +98,10 @@ class ResultWindow {
     void create(bool compact);
     void resize();
     void speak();
+    void language_menu();
+    void service_menu();
+    void open_model_options();
+    void refresh_labels();
 public:
     explicit ResultWindow(App& app):app_(app){}
     ~ResultWindow();
@@ -100,6 +111,7 @@ public:
     void pending();
     HWND window()const{return window_;}
     HWND original_window()const{return original_.foreground;}
+    HWND dialog()const{return IsWindowVisible(options_)?options_:window_;}
     void hide();
 };
 
@@ -128,12 +140,13 @@ class SettingsWindow {
     void label(const std::string& key,int x,int y,int width=180,int height=28);
     void refresh_language();
     void command(int id,int notification);
-    void demo_paint(HWND window);
+    void demo_paint(HWND window,HDC dc);
 public:
     SettingsWindow(App& app,int section);
     ~SettingsWindow();
     HWND window()const{return window_;}
     void focus(int section);
     void show_status(const std::string& message);
+    void preview_at(float seconds){demo_frame_=(unsigned)(seconds/.033f);demo_paused_=true;InvalidateRect(host_,nullptr,FALSE);}
 };
 }

@@ -1,7 +1,7 @@
 param(
     [string]$Compiler = $env:BREEZY_ZIG,
     [string]$OutputDirectory = '',
-    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '2.0.0',
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '2.0.1',
     [switch]$Check
 )
 $ErrorActionPreference = 'Stop'
@@ -92,7 +92,7 @@ try {
     $arguments += $sources
     $arguments += @('-I',$OutputDirectory)
     $arguments += $objects
-    $arguments += @((Join-Path $OutputDirectory 'Breezy.res'),'-o',(Join-Path $OutputDirectory 'Breezy.exe'),'-luser32','-lgdi32','-lcomctl32','-lshell32','-lshlwapi','-lole32','-loleaut32','-lcrypt32','-lwinhttp','-luuid','-lgdiplus','-ldwmapi','-lsapi','-lcomdlg32','-lws2_32')
+    $arguments += @((Join-Path $OutputDirectory 'Breezy.res'),'-o',(Join-Path $OutputDirectory 'Breezy.exe'),'-luser32','-lgdi32','-lcomctl32','-lshell32','-lshlwapi','-lole32','-loleaut32','-lcrypt32','-lwinhttp','-luuid','-lgdiplus','-ldwmapi','-lsapi','-lcomdlg32','-lws2_32','-luxtheme')
     & $Compiler @arguments
     if ($LASTEXITCODE -ne 0) { throw 'Native compilation failed.' }
     & (Join-Path $PSScriptRoot 'Verify-Portable.ps1') -Executable (Join-Path $OutputDirectory 'Breezy.exe')

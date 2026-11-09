@@ -26,7 +26,7 @@ while ([BitConverter]::ToUInt32($bytes,$offset+12) -ne 0) {
     while ($bytes[$end] -ne 0) { $end++ }
     $name = [Text.Encoding]::ASCII.GetString($bytes,$nameOffset,$end-$nameOffset).ToLowerInvariant()
     # The universal CRT is part of supported Windows 10/11 systems.
-    $system = @('user32.dll','gdi32.dll','comctl32.dll','shell32.dll','shlwapi.dll','ole32.dll','oleaut32.dll','crypt32.dll','winhttp.dll','gdiplus.dll','dwmapi.dll','comdlg32.dll','ws2_32.dll','kernel32.dll','advapi32.dll','ntdll.dll','msvcrt.dll','ucrtbase.dll')
+    $system = @('user32.dll','gdi32.dll','comctl32.dll','shell32.dll','shlwapi.dll','ole32.dll','oleaut32.dll','crypt32.dll','winhttp.dll','gdiplus.dll','dwmapi.dll','uxtheme.dll','comdlg32.dll','ws2_32.dll','kernel32.dll','advapi32.dll','ntdll.dll','msvcrt.dll','ucrtbase.dll')
     if ($name -notin $system -and $name -notlike 'api-ms-win-crt-*.dll') { throw ('Unexpected runtime dependency: ' + $name) }
     $imports += $name
     $offset += 20

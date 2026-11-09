@@ -18,6 +18,10 @@ Windows 本地悬浮翻译工具。输入框里写好内容，点击玻璃气泡
 
 ![原生划词查词界面](Assets/native-dictionary-preview.png)
 
+v2.0.1 已用原生 C++ 恢复旧版的胶囊展开动画、白色圆角结果卡片、阴影和设置页风格，继续保持无需 .NET。
+
+![原生设置与动画演示](Assets/native-selection-preview.png)
+
 ## 支持开发
 
 欢迎通过反馈问题、分享项目和参与改进支持轻风翻译。捐赠完全自愿，不影响现有功能；收款入口尚未配置，确定后会同步到此处和软件「关于轻风」页面。
@@ -136,7 +140,7 @@ Start-Process '.\artifacts\native\Breezy.exe' -ArgumentList '--native-pack-test 
 测试结果位于输出目录的 `native-test.txt`、`native-ui-test.txt` 和 `native-pack-test.txt`。测试覆盖词典、UTF-8 分段、服务协议、密钥加密、快捷键冲突恢复、多语言设置、焦点与原文变化保护、取消、模型切换和朗读偏好。窗口测试使用静音的语音替身验证调用及语言选择。
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
 ```
 
 发布脚本默认构建原生版，运行核心检查，打包主程序、配置、双语说明和许可证，并生成 SHA-256 校验文件。扩展词典作为单独附件发布，不塞入主程序下载包。发布步骤见 [RELEASE.md](RELEASE.md)。

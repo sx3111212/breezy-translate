@@ -2,6 +2,8 @@
 
 The executable is **Breezy.exe**. This implementation uses C++17, Win32, UI Automation COM, WinHTTP, DPAPI, SAPI, and GDI+. It contains no CLR entry point and does not bundle or load the .NET runtime. The executable imports Windows system libraries, including the universal CRT supplied with supported Windows 10/11 systems.
 
+The original visual style is drawn with GDI+ and native control subclasses in `theme.cpp`, `bubble.cpp`, and `preview.cpp`. DWM supplies window rounding and shadows on supported Windows versions; system Rich Edit supplies borderless text. These are Windows components, not .NET dependencies.
+
 ## Build
 
 Use the Windows x64 distribution of [Zig 0.17.1](https://ziglang.org/download/). This version was used for the release build. Official archive SHA-256:
@@ -35,7 +37,7 @@ Reports and fixture screenshots are written alongside the test executable. The o
 ## Package
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-Release.ps1 -Repository sx3111212/breezy-translate -Version 2.0.1
 ```
 
 The release script copies only runtime files and documentation into the ZIP. Compiler caches, object files, generated resource source, test reports, and .NET assemblies are excluded. Expanded dictionary data is a separate release attachment.
